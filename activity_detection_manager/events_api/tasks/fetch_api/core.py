@@ -12,6 +12,7 @@ from common_utils.apis.base import BaseAPI
 from common_utils.service.core import ServiceManager
 from common_utils.state_machine.core import StateMachine
 
+DATETIME_FORMAT = "%Y-%m-%d %H-%M-%S"
 services = Service.objects.filter(is_active=True)
 fsm = StateMachine()
 
@@ -19,6 +20,7 @@ fsm = StateMachine()
              name='service-api:fetch_data')
 def fetch_data(self, **kwargs):
     
+    data:dict =  {}
     results = {}
     try:
         for service in services:
@@ -37,12 +39,26 @@ def fetch_data(self, **kwargs):
                 **result,
             }
             
+            
         state = fsm.handle_event(event_data=results)
-        print(state)    
-        
+        data.update(
+            {
+                "action": "done",
+                "time": datetime.now().strftime(DATETIME_FORMAT),
+                "results": f"Current State: {state}"
+            }
+        )
     except Exception as err:
         logging.error(f"Error fetching data from service apis: {err}")
+        data.update(
+            {
+                "action": "failed",
+                "time": datetime.now().strftime(DATETIME_FORMAT),
+                "results": f"Error: {err}",
+            }
+        )
         
+    return data
 
 
 @shared_task(bind=True,autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5}, ignore_result=True,
