@@ -30,7 +30,7 @@ services:
   # RabbitMQ Service
   rabbitmq:
     image: "rabbitmq:3-management-alpine"
-    container_name: delivery-manager-rabbitmq
+    container_name: activity-detection-manager-rabbitmq
     ports:
       - "26097:15672"
     volumes:
