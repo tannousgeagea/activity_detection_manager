@@ -34,7 +34,7 @@ class BaseConfig:
             'task': 'events_api.tasks.fetch_api.core.query_apis',
             'schedule': 1.0,  # Every second
             'options': {
-                'queue': f'{os.getenv("QUEUE_NAME", "celery")}'  # Send this task to 'api_queue'
+                'queue': f'{os.getenv("QUEUE_NAME", "celery")}'
             },
         },
     }
