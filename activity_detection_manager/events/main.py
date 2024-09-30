@@ -18,11 +18,11 @@
 #     print(f"Current state: {state}")
 
 
-from events_api.config.celery_utils import create_celery
-from events_api.tasks.fetch_api.core import fetch_data
+from events.config.celery_utils import create_celery
+from events.tasks.fetch_api.core import fetch_data
 
 
 celery = create_celery()
 
-celery.autodiscover_tasks(['events_api.tasks'])
+celery.autodiscover_tasks(['events.tasks'])
     

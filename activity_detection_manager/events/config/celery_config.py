@@ -2,7 +2,7 @@ import os
 import celery
 from functools import lru_cache
 from kombu import Queue
-from events_api import tasks
+from events import tasks
 
 def route_task(name, args, kwargs, options, task=None, **kw):
     print(name)
@@ -31,7 +31,7 @@ class BaseConfig:
     
     CELERY_BEAT_SCHEDULE = {
         'fetch-api-data-every-second': {
-            'task': 'events_api.tasks.fetch_api.core.query_apis',
+            'task': 'events.tasks.fetch_api.core.query_apis',
             'schedule': 1.0,  # Every second
             'options': {
                 'queue': f'{os.getenv("QUEUE_NAME", "celery")}'

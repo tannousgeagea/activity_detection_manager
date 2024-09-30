@@ -6,7 +6,7 @@ import logging
 from celery import Celery
 from celery import shared_task
 from datetime import datetime, timedelta
-from database.models import Service
+from metadata.models import Service
 
 from common_utils.apis.base import BaseAPI
 from common_utils.service.core import ServiceManager
@@ -62,7 +62,7 @@ def fetch_data(self, **kwargs):
 
 
 @shared_task(bind=True,autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5}, ignore_result=True,
-             name='events_api.tasks.fetch_api.core.query_apis')
+             name='events.tasks.fetch_api.core.query_apis')
 def query_apis(self, **kwargs):
     """
     Celery task that will run every second.

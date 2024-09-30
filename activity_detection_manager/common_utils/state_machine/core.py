@@ -2,7 +2,7 @@ import django
 django.setup()
 
 import operator
-from database.models import (
+from metadata.models import (
     State, 
     Transition, 
     TransitionEntry, 

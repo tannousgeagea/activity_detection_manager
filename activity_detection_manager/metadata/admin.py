@@ -40,10 +40,10 @@ class TransitionEntryAdmin(admin.ModelAdmin):
     """
     Admin configuration for the TransitionEntry model.
     """
-    list_display = ['from_state', 'to_state', 'show_conditions', 'updated_at']
-    search_fields = ['from_state__name', 'to_state__name', 'description']
-    list_filter = ['from_state', 'to_state', 'created_at', 'updated_at']
-    ordering = ['from_state', 'to_state']
+    list_display = ['transition', 'show_conditions', 'updated_at']
+    search_fields = ['description']
+    list_filter = ['transition__from_state', 'transition__to_state', 'created_at', 'updated_at']
+    # ordering = ['transition__from_state', 'transition__to_state']
     inlines = [ConditionInline]
     filter_horizontal = ('conditions',)
     

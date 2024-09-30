@@ -6,7 +6,6 @@ django.setup()
 
 from datetime import datetime
 from common_utils.apis.base import BaseAPI
-from database.models import Service
 
 DATETIME_FORMAT = "%Y-%m-%d %H-%M-%S"
 

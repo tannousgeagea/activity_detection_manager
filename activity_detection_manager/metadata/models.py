@@ -50,28 +50,6 @@ class Condition(models.Model):
     def __str__(self):
         return f"{self.left_operand} {self.operator} {self.right_operand}"
 
-class TransitionEntry(models.Model):
-    """
-    Represents a single entry for a transition from one state to another.
-    Each entry has its own set of conditions that must all be met (AND logic).
-    Multiple entries for the same from_state to to_state use OR logic.
-    """
-    from_state = models.ForeignKey(State, related_name='from_entries', on_delete=models.CASCADE)
-    to_state = models.ForeignKey(State, related_name='to_entries', on_delete=models.CASCADE)
-    conditions = models.ManyToManyField(Condition, blank=True)
-    description = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'transition_entry'
-        verbose_name = 'Transition Entry'
-        verbose_name_plural = 'Transition Entries'
-        ordering = ['from_state', 'to_state']
-
-    def __str__(self):
-        return f"Entry from {self.from_state} to {self.to_state}"
-
 class Transition(models.Model):
     """
     Represents a state transition in the state machine.
@@ -94,6 +72,28 @@ class Transition(models.Model):
     def __str__(self):
         return f"Transition from {self.from_state} to {self.to_state}"
 
+class TransitionEntry(models.Model):
+    """
+    Represents a single entry for a transition from one state to another.
+    Each entry has its own set of conditions that must all be met (AND logic).
+    Multiple entries for the same from_state to to_state use OR logic.
+    """
+    # from_state = models.ForeignKey(State, related_name='from_entries', on_delete=models.CASCADE)
+    # to_state = models.ForeignKey(State, related_name='to_entries', on_delete=models.CASCADE)
+    transition = models.ForeignKey(Transition, on_delete=models.CASCADE, related_name='transition')
+    conditions = models.ManyToManyField(Condition, blank=True)
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'transition_entry'
+        verbose_name = 'Transition Entry'
+        verbose_name_plural = 'Transition Entries'
+        ordering = ['transition']
+
+    def __str__(self):
+        return f"Entry from {self.transition.from_state} to {self.transition.to_state}"
 
 class Configuration(models.Model):
     """
