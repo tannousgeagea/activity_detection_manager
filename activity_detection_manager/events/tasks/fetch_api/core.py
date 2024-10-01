@@ -8,7 +8,6 @@ from celery import shared_task
 from datetime import datetime, timedelta
 from metadata.models import Service
 
-from common_utils.apis.base import BaseAPI
 from common_utils.service.core import ServiceManager
 from common_utils.state_machine.core import StateMachine
 
@@ -17,7 +16,7 @@ services = Service.objects.filter(is_active=True)
 fsm = StateMachine()
 
 @shared_task(bind=True,autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5}, ignore_result=True,
-             name='service-api:fetch_data')
+             name='events.tasks.fetch_api.core.fetch_data')
 def fetch_data(self, **kwargs):
     
     data:dict =  {}
