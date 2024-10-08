@@ -30,16 +30,19 @@ def fetch_data(self, **kwargs):
             )
             
             result = service_manager.get_data(
-                gate_id=None
+                location='gate03'
             )
-            
+        
+            print(result)
             results = {
                 **results,
                 **result,
             }
             
-            
-        state = fsm.handle_event(event_data=results)
+        state = fsm.state
+        if results:
+            state = fsm.handle_event(event_data=results)
+    
         data.update(
             {
                 "action": "done",

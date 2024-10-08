@@ -30,13 +30,22 @@ class StateMachine:
         Evaluate a single condition using event_data and configuration values.
         """
         left_value = event_data.get(condition.left_operand, None)
+        print(left_value)
+
+        if left_value is None:
+            print(f"Ignoring condition {condition} as {condition.left_operand} is not found in event_data.")
+            return False     
+
         right_value = (
             Configuration.objects.get(key=condition.right_operand).value 
             if condition.right_operand in Configuration.objects.values_list('key', flat=True)
             else condition.right_operand
         )
         
-        return self.operators[condition.operator](float(left_value), float(right_value))
+        left_value = self.map_value(left_value)
+        right_value = self.map_value(right_value)
+        
+        return self.operators[condition.operator](left_value, right_value)
 
     def _evaluate_transition_entry(self, entry: TransitionEntry, event_data: dict) -> bool:
         """
@@ -52,11 +61,17 @@ class StateMachine:
         possible_transitions = Transition.objects.filter(from_state=self.state)
         for transition in possible_transitions:
             # Check all the TransitionEntries for the current transition
-            entries = TransitionEntry.objects.filter(from_state=transition.from_state, to_state=transition.to_state)
+            entries = TransitionEntry.objects.filter(transition=transition)
             for entry in entries:
                 if self._evaluate_transition_entry(entry, event_data):
-                    print(f"Transitioning from {self.state} to {entry.to_state}")
-                    self.state = entry.to_state
+                    print(f"Transitioning from {self.state} to {entry.transition.to_state}")
+                    self.state = entry.transition.to_state
                     return self.state.name
         
         return self.state.name
+    
+    def map_value(self, value):
+        try:
+            value = float(value)
+        except:
+            value = str(value)

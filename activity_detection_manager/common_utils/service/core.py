@@ -15,12 +15,12 @@ class ServiceManager:
         self.service = service
         self.auth_token = auth_token
         
-    def get_data(self, gate_id:str):
+    def get_data(self, location:str):
         """
         Calls each service defined in the database, retrieves the necessary data, and returns it.
         """
         results = {}
-        dt = datetime.now().strftime(DATETIME_FORMAT)
+        dt = datetime.now() #.strftime(DATETIME_FORMAT)
 
         try:
             headers = {}
@@ -29,10 +29,12 @@ class ServiceManager:
 
             params = {
                 "timestamp": dt,
-                "gate_id": gate_id,
+                "location": location,
             }
-
-            results = self.apis.get(params=params)
+                
+            results = self.api.get(params=params)
+            if 'status' in results.keys():
+                results[f"{self.service}_status"] = results['status']
 
         except Exception as err:
             logging.error(f"Error calling api {self.api.url}: {err}")

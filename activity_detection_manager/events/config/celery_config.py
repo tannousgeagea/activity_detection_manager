@@ -31,7 +31,7 @@ class BaseConfig:
     
     CELERY_BEAT_SCHEDULE = {
         'fetch-api-data-every-second': {
-            'task': 'events.tasks.fetch_api.core.query_apis',
+            'task': 'events.tasks.fetch_api.core.fetch_data',
             'schedule': 1.0,  # Every second
             'options': {
                 'queue': f'{os.getenv("QUEUE_NAME", "celery")}'

@@ -2,7 +2,11 @@
 import logging
 import requests
 from requests.exceptions import HTTPError
+from dataclasses import dataclass
 
+
+
+@dataclass
 class BaseAPI:
     url:str=None
 
@@ -10,11 +14,19 @@ class BaseAPI:
         results = {}
         try:
             response = requests.get(url=self.url, params=params)
-            results = response.json()
-        except HTTPError as err:
-            logging.error(f"HTTPError getting data from {self.url}: {err}")
-        except Exception as err:
-            logging.error(f"Exeception Error getting data from {self.url}: {err}")
             
-        return  results
+            if response.status_code != 200:
+                err = response.json().get('error')
+                raise HTTPError(
+                    f"HttpError Occured: {response.status_code}: {err}"
+                ) 
+            
+            results = response.json().get('data')
+            return  results
+        
+        except HTTPError as err:
+            raise ValueError(f"HTTPError getting data from {self.url}: {err}")
+        except Exception as err:
+            raise ValueError(f"Exeception Error getting data from {self.url}: {err}")
+            
         
