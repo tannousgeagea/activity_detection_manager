@@ -30,3 +30,24 @@ class BaseAPI:
             raise ValueError(f"Exeception Error getting data from {self.url}: {err}")
             
         
+    def post(self, url, params):
+        try:
+            
+            print(f"Request to {url} ...", end='')
+            response = requests.post(
+                url=url,
+                params=params
+            )
+            
+            if response.status_code != 200:
+                raise HTTPError(
+                    f"HTTPError: {response.status_code}: {response.json()}"
+                )
+            
+            print("Success!")
+            
+        except HTTPError as err:
+            raise ValueError(f"HTTPError posting data to {url}: {err}")
+        except Exception as err:
+            raise ValueError(f"Exeception Error posting error to {url}: {err}")
+            

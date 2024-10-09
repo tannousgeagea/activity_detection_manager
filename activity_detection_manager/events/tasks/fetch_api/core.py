@@ -2,18 +2,21 @@ import os
 import django
 django.setup()
 
+import uuid
 import logging
 from celery import Celery
 from celery import shared_task
 from datetime import datetime, timedelta
 from metadata.models import Service
 
+from common_utils.apis.base import BaseAPI
 from common_utils.service.core import ServiceManager
 from common_utils.state_machine.core import StateMachine
 
 DATETIME_FORMAT = "%Y-%m-%d %H-%M-%S"
 services = Service.objects.filter(is_active=True)
 fsm = StateMachine()
+base_api = BaseAPI()
 
 @shared_task(bind=True,autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5}, ignore_result=True,
              name='events.tasks.fetch_api.core.fetch_data')
@@ -32,8 +35,7 @@ def fetch_data(self, **kwargs):
             result = service_manager.get_data(
                 location='gate03'
             )
-        
-            print(result)
+
             results = {
                 **results,
                 **result,
@@ -43,6 +45,18 @@ def fetch_data(self, **kwargs):
         if results:
             state = fsm.handle_event(event_data=results)
     
+        base_api.post(
+            url='http://delivery-manager:18805/api/v1/delivery/event',
+            params={
+                "event_uid": str(uuid.uuid4()),
+                "event_name": "activity-detection-manager",
+                "location": "gate03",
+                "timestamp": datetime.now(),
+                "status": state,
+                "description": state,
+            }
+        )
+        
         data.update(
             {
                 "action": "done",
